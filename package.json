@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "github-build": "ng build --configuration production --base-href='https://sirjoe83.github.io/nutrition-tracker/'"
   },
   "private": true,
   "packageManager": "npm@11.4.1",
