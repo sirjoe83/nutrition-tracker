@@ -1,0 +1,67 @@
+<div class="app-header">
+  <div class="tag">Schritt 1 von 3</div>
+  <h1>Dein Körper &amp; Aktivität</h1>
+  <p>Berechne deinen täglichen Grundumsatz.</p>
+</div>
+
+<div class="step-indicator" aria-label="Schritt 1 von 3">
+  <div class="step-dot active" aria-hidden="true"></div>
+  <div class="step-dot" aria-hidden="true"></div>
+  <div class="step-dot" aria-hidden="true"></div>
+</div>
+
+<div class="card">
+  <div class="card-title" id="personal-data-label">Persönliche Daten</div>
+  <fieldset aria-labelledby="personal-data-label">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="gender">Geschlecht</label>
+        <select id="gender" [(ngModel)]="gender" (ngModelChange)="recalc()">
+          <option value="m">Männlich</option>
+          <option value="f">Weiblich</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="age">Alter (Jahre)</label>
+        <input type="number" id="age" [(ngModel)]="age" (ngModelChange)="recalc()" min="10" max="100" placeholder="25">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="height">Größe (cm)</label>
+        <input type="number" id="height" [(ngModel)]="height" (ngModelChange)="recalc()" placeholder="175">
+      </div>
+      <div class="form-group">
+        <label for="weight">Gewicht (kg)</label>
+        <input type="number" id="weight" [(ngModel)]="weight" (ngModelChange)="recalc()" placeholder="70">
+      </div>
+    </div>
+  </fieldset>
+</div>
+
+<div class="card">
+  <div class="card-title" id="activity-label">Aktivitätslevel</div>
+  <div class="activity-grid" role="radiogroup" aria-labelledby="activity-label">
+    @for (level of activityLevels; track level.factor) {
+      <button
+        type="button"
+        class="activity-btn"
+        [class.selected]="selectedFactor() === level.factor"
+        [attr.aria-pressed]="selectedFactor() === level.factor"
+        (click)="selectActivity(level.factor)"
+      >
+        <span class="icon" aria-hidden="true">{{ level.icon }}</span>
+        <span class="label">{{ level.label }}</span>
+        <span class="factor">{{ level.description }}</span>
+      </button>
+    }
+  </div>
+
+  <div class="result-box" aria-live="polite">
+    <div class="label">Geschätzter Tagesumsatz (TDEE)</div>
+    <div class="value">{{ fmt(tdee()) }}</div>
+    <div class="unit">kcal / Tag</div>
+  </div>
+</div>
+
+<button class="btn-primary" type="button" (click)="next()">Weiter →</button>

@@ -1,0 +1,113 @@
+<div class="dashboard-header">
+  <div>
+    <h1 class="dashboard-title">Heute</h1>
+    <time class="date" [attr.datetime]="today.toISOString()">
+      {{ today.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }) }}
+    </time>
+  </div>
+  <button class="settings-btn" type="button" aria-label="Einstellungen öffnen" (click)="openSettings()">⚙️</button>
+</div>
+
+<!-- Status Strip -->
+<div
+  class="status-strip"
+  [class.ok]="status().type === 'ok'"
+  [class.warn]="status().type === 'warn'"
+  [class.over]="status().type === 'over'"
+  role="status"
+  aria-live="polite"
+>
+  <span aria-hidden="true">{{ status().icon }}</span>
+  <span>{{ status().msg }}</span>
+</div>
+
+<!-- Donut Card -->
+<div class="donut-card" aria-label="Kalorienübersicht">
+  <div class="donut-wrap">
+    <svg width="130" height="130" viewBox="0 0 130 130" aria-hidden="true">
+      <circle cx="65" cy="65" r="52" fill="none" stroke="var(--surface2)" stroke-width="14"/>
+      <circle
+        cx="65" cy="65" r="52" fill="none"
+        [attr.stroke]="donutColor()"
+        stroke-width="14"
+        stroke-linecap="round"
+        [attr.stroke-dasharray]="donutStroke()"
+        transform="rotate(-90 65 65)"
+        style="transition: stroke-dasharray 1s cubic-bezier(.4,0,.2,1), stroke 0.5s"
+      />
+    </svg>
+    <div class="donut-center" aria-hidden="true">
+      <div class="pct">{{ pct() }}%</div>
+      <div class="lbl">verbraucht</div>
+    </div>
+  </div>
+  <div class="donut-stats">
+    <div class="stat">
+      <div class="s-lbl">Ziel</div>
+      <div class="s-val">{{ fmt(profile().goal) }} kcal</div>
+    </div>
+    <div class="stat">
+      <div class="s-lbl">Gegessen</div>
+      <div class="s-val orange">{{ fmt(totalEaten()) }} kcal</div>
+    </div>
+    <div class="stat">
+      <div class="s-lbl">Verbleibend</div>
+      <div class="s-val" [class.green]="remaining() >= 0" [class.red]="remaining() < 0">
+        {{ remaining() < 0 ? '−' : '' }}{{ fmt(remaining()) }} kcal
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Progress bar -->
+<div class="card macro-bar-wrap">
+  <div class="card-title">Kalorienverlauf</div>
+  <div class="macro-bar-track" role="progressbar" [attr.aria-valuenow]="pct()" aria-valuemin="0" aria-valuemax="100">
+    <div
+      class="macro-bar-fill"
+      [style.width.%]="pct()"
+      [style.background]="barColor()"
+    ></div>
+  </div>
+  <div class="macro-labels" aria-hidden="true">
+    <span>0 kcal</span>
+    <span>Ziel: {{ fmt(profile().goal) }} kcal</span>
+  </div>
+</div>
+
+<!-- Meals -->
+<div class="meals-header">
+  <h2 class="meals-title">Mahlzeiten</h2>
+  <button class="add-meal-btn" type="button" (click)="openAddMeal()">
+    <span aria-hidden="true">+</span> Hinzufügen
+  </button>
+</div>
+
+<section aria-label="Mahlzeiten des Tages">
+  @if (meals().length === 0) {
+    <div class="empty-state">
+      <div class="icon" aria-hidden="true">🍽️</div>
+      <p>Noch keine Mahlzeiten.<br>Füge deine erste hinzu!</p>
+    </div>
+  } @else {
+    @for (meal of meals(); track meal.time; let i = $index) {
+      <article class="meal-item">
+        <div class="meal-info">
+          <div class="meal-name">{{ meal.name }}</div>
+          <div class="meal-meta">{{ meal.type }} · {{ fmtTime(meal.time) }} Uhr</div>
+        </div>
+        <div class="meal-right">
+          <div class="meal-kcal">{{ fmt(meal.kcal) }}<span>kcal</span></div>
+          <button
+            class="meal-delete"
+            type="button"
+            [attr.aria-label]="'Mahlzeit ' + meal.name + ' entfernen'"
+            (click)="deleteMeal(i)"
+          >✕</button>
+        </div>
+      </article>
+    }
+  }
+</section>
+
+<app-add-meal-modal (mealAdded)="onMealAdded($event)" />

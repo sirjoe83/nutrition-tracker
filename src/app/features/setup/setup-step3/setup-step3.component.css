@@ -1,0 +1,137 @@
+.app-header {
+  padding: 52px 24px 20px;
+}
+
+.app-header .tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.8;
+}
+
+.app-header h1 {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-top: 6px;
+}
+
+.app-header p {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.step-indicator {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.step-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: all 0.3s;
+}
+
+.step-dot.active {
+  background: var(--accent);
+  width: 20px;
+  border-radius: 100px;
+}
+
+.step-dot.done {
+  background: rgba(212, 245, 106, 0.4);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 0 16px 12px;
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.summary-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.summary-row {
+  background: var(--surface2);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-lbl {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.summary-val {
+  font-weight: 600;
+}
+
+.summary-val.accent {
+  color: var(--accent);
+}
+
+.summary-val.large {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.summary-val.danger {
+  color: var(--danger);
+}
+
+.summary-val.orange {
+  color: var(--accent2);
+}
+
+.summary-val.teal {
+  color: var(--accent3);
+}
+
+.btn-primary {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 16px 16px 0;
+  background: var(--accent);
+  color: #0e0e12;
+  border: none;
+  border-radius: 16px;
+  padding: 16px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.15s,
+    opacity 0.15s;
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}

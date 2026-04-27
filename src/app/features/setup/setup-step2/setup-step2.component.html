@@ -1,0 +1,86 @@
+<div class="app-header">
+  <div class="tag">Schritt 2 von 3</div>
+  <h1>Dein Tagesziel</h1>
+  <p>Wie viel möchtest du täglich essen?</p>
+</div>
+
+<div class="step-indicator" aria-label="Schritt 2 von 3">
+  <div class="step-dot done" aria-hidden="true"></div>
+  <div class="step-dot active" aria-hidden="true"></div>
+  <div class="step-dot" aria-hidden="true"></div>
+</div>
+
+<div class="card">
+  <div class="card-title" id="goal-label">Ziel wählen</div>
+  <div class="goal-toggles" role="group" aria-labelledby="goal-label">
+    <button
+      type="button"
+      class="goal-toggle deficit"
+      [class.selected]="goalType() === 'deficit'"
+      [attr.aria-pressed]="goalType() === 'deficit'"
+      (click)="selectGoal('deficit')"
+    >⬇ Abnehmen</button>
+    <button
+      type="button"
+      class="goal-toggle maintain"
+      [class.selected]="goalType() === 'maintain'"
+      [attr.aria-pressed]="goalType() === 'maintain'"
+      (click)="selectGoal('maintain')"
+    >= Halten</button>
+    <button
+      type="button"
+      class="goal-toggle surplus"
+      [class.selected]="goalType() === 'surplus'"
+      [attr.aria-pressed]="goalType() === 'surplus'"
+      (click)="selectGoal('surplus')"
+    >⬆ Zunehmen</button>
+  </div>
+
+  <div class="form-group">
+    <label for="goal-slider">{{ sliderLabel() }}</label>
+    <input
+      type="range"
+      id="goal-slider"
+      min="-1000"
+      max="1000"
+      step="50"
+      [value]="offset()"
+      (input)="onSliderChange($any($event.target).value)"
+      [attr.aria-valuenow]="offset()"
+      [attr.aria-valuemin]="-1000"
+      [attr.aria-valuemax]="1000"
+    >
+  </div>
+
+  <div class="goal-summary">
+    <div>
+      <div class="lbl">Tägliches Kalorienziel</div>
+      <div class="val">{{ fmt(goal()) }}</div>
+    </div>
+    <div class="goal-summary-right">
+      <div class="lbl">pro Woche</div>
+      <div class="weekly-val">{{ weeklyLabel() }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Makronährstoffe (empfohlen)</div>
+  <div class="macros-grid">
+    <div class="macro-item">
+      <div class="macro-lbl">Protein</div>
+      <div class="macro-val protein">{{ macros().protein }}g</div>
+    </div>
+    <div class="macro-item">
+      <div class="macro-lbl">Kohlenhydrate</div>
+      <div class="macro-val carbs">{{ macros().carbs }}g</div>
+    </div>
+    <div class="macro-item">
+      <div class="macro-lbl">Fett</div>
+      <div class="macro-val fat">{{ macros().fat }}g</div>
+    </div>
+  </div>
+</div>
+
+<button class="btn-primary" type="button" (click)="next()">Weiter →</button>
+<button class="btn-ghost" type="button" (click)="back()">← Zurück</button>

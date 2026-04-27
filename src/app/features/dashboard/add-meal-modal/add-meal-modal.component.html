@@ -1,0 +1,57 @@
+<div class="modal-sheet" #sheet>
+  <div class="modal-handle" aria-hidden="true"></div>
+  <h2 id="modal-title" class="modal-title">Mahlzeit hinzufügen</h2>
+
+  <div class="card-title">Schnellauswahl</div>
+  <div class="quick-picks" role="list">
+    @for (meal of quickMeals; track meal.name) {
+      <button type="button" class="quick-pick" role="listitem" (click)="fillQuick(meal)">
+        {{ meal.name }} · {{ meal.kcal }} kcal
+      </button>
+    }
+  </div>
+
+  <div class="divider" aria-hidden="true"></div>
+
+  <div class="form-group">
+    <label for="meal-name">Bezeichnung</label>
+    <input
+      type="text"
+      id="meal-name"
+      [ngModel]="mealName()"
+      (ngModelChange)="mealName.set($event)"
+      placeholder="z.B. Haferflocken mit Früchten"
+      autocomplete="off"
+    >
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="meal-kcal">Kalorien (kcal)</label>
+      <input
+        type="number"
+        id="meal-kcal"
+        [ngModel]="mealKcal()"
+        (ngModelChange)="mealKcal.set($event)"
+        placeholder="350"
+        min="1"
+      >
+    </div>
+    <div class="form-group">
+      <label for="meal-type">Mahlzeit</label>
+      <select id="meal-type" [ngModel]="mealType()" (ngModelChange)="mealType.set($event)">
+        <option>🌅 Frühstück</option>
+        <option>☀️ Mittagessen</option>
+        <option>🌙 Abendessen</option>
+        <option>🍎 Snack</option>
+      </select>
+    </div>
+  </div>
+
+  <button
+    class="btn-primary"
+    type="button"
+    (click)="submit()"
+    [attr.aria-disabled]="!mealName().trim() || !mealKcal()"
+  >Hinzufügen</button>
+</div>
