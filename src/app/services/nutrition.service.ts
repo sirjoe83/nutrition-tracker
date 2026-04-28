@@ -1,8 +1,24 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { GoalType, Meal, UserProfile } from '../models/nutrition.models';
 
+type QuickMeal = Omit<Meal, 'time'>;
+
+const RECENT_MEALS_KEY = 'recent-meals';
+const MAX_RECENT = 10;
+
+function loadRecentMeals(): QuickMeal[] {
+  try {
+    const raw = localStorage.getItem(RECENT_MEALS_KEY);
+    return raw ? (JSON.parse(raw) as QuickMeal[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class NutritionService {
+  readonly quickMeals = signal<QuickMeal[]>(loadRecentMeals());
+
   readonly profile = signal<UserProfile>({
     gender: 'm',
     age: 25,
@@ -55,5 +71,14 @@ export class NutritionService {
 
   deleteMeal(index: number): void {
     this.meals.update((ms) => ms.filter((_, i) => i !== index));
+  }
+
+  addToRecentMeals(meal: QuickMeal): void {
+    this.quickMeals.update((list) => {
+      const filtered = list.filter((m) => m.name !== meal.name);
+      const updated = [meal, ...filtered].slice(0, MAX_RECENT);
+      localStorage.setItem(RECENT_MEALS_KEY, JSON.stringify(updated));
+      return updated;
+    });
   }
 }

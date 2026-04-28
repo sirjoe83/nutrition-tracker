@@ -19,17 +19,6 @@ export interface Meal {
   time: number;
 }
 
-export const QUICK_MEALS: Meal[] = [
-  { name: 'Haferflocken', kcal: 350, type: '🌅 Frühstück', time: 0 },
-  { name: 'Banane', kcal: 90, type: '🍎 Snack', time: 0 },
-  { name: 'Hühnchenbrust', kcal: 165, type: '☀️ Mittagessen', time: 0 },
-  { name: 'Vollkornbrot', kcal: 120, type: '🌅 Frühstück', time: 0 },
-  { name: 'Joghurt', kcal: 100, type: '🍎 Snack', time: 0 },
-  { name: 'Nudeln', kcal: 350, type: '☀️ Mittagessen', time: 0 },
-  { name: 'Salat', kcal: 80, type: '🌙 Abendessen', time: 0 },
-  { name: 'Proteinshake', kcal: 200, type: '🍎 Snack', time: 0 },
-  { name: 'Ei (2 Stk)', kcal: 140, type: '🌅 Frühstück', time: 0 },
-];
 
 export const ACTIVITY_LEVELS = [
   { factor: 1.2, icon: '🛋️', label: 'Sitzend', description: 'Kein Sport' },

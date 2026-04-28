@@ -4,10 +4,12 @@
 
   <div class="card-title">Schnellauswahl</div>
   <div class="quick-picks" role="list">
-    @for (meal of quickMeals; track meal.name) {
+    @for (meal of quickMeals(); track meal.name) {
       <button type="button" class="quick-pick" role="listitem" (click)="fillQuick(meal)">
         {{ meal.name }} · {{ meal.kcal }} kcal
       </button>
+    } @empty {
+      <p class="quick-picks-empty">Noch keine Mahlzeiten gespeichert.</p>
     }
   </div>
 

@@ -8,7 +8,8 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Meal, QUICK_MEALS } from '../../../models/nutrition.models';
+import { Meal } from '../../../models/nutrition.models';
+import { NutritionService } from '../../../services/nutrition.service';
 
 @Component({
   selector: 'app-add-meal-modal',
@@ -26,12 +27,13 @@ import { Meal, QUICK_MEALS } from '../../../models/nutrition.models';
 })
 export class AddMealModalComponent {
   private readonly el = inject(ElementRef);
+  private readonly nutrition = inject(NutritionService);
 
   readonly mealAdded = output<Omit<Meal, 'time'>>();
   readonly closed = output<void>();
 
   readonly isOpen = signal(false);
-  readonly quickMeals = QUICK_MEALS;
+  readonly quickMeals = this.nutrition.quickMeals;
 
   readonly mealName = signal('');
   readonly mealKcal = signal<number | null>(null);
@@ -65,7 +67,9 @@ export class AddMealModalComponent {
     const name = this.mealName().trim();
     const kcal = this.mealKcal();
     if (!name || !kcal) return;
-    this.mealAdded.emit({ name, kcal, type: this.mealType() });
+    const meal = { name, kcal, type: this.mealType() };
+    this.nutrition.addToRecentMeals(meal);
+    this.mealAdded.emit(meal);
     this.close();
   }
 }
