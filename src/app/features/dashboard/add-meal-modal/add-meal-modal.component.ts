@@ -29,7 +29,7 @@ export class AddMealModalComponent {
   private readonly el = inject(ElementRef);
   private readonly nutrition = inject(NutritionService);
 
-  readonly mealAdded = output<Omit<Meal, 'time'>>();
+  readonly mealAdded = output<Omit<Meal, 'time' | 'date'>>();
   readonly closed = output<void>();
 
   readonly isOpen = signal(false);
@@ -57,7 +57,7 @@ export class AddMealModalComponent {
     if (event.target === this.el.nativeElement) this.close();
   }
 
-  fillQuick(meal: Omit<Meal, 'time'>): void {
+  fillQuick(meal: Omit<Meal, 'time' | 'date'>): void {
     this.mealName.set(meal.name);
     this.mealKcal.set(meal.kcal);
     this.mealType.set(meal.type);

@@ -1,11 +1,17 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { GoalType, Meal, UserProfile } from '../models/nutrition.models';
 
-type QuickMeal = Omit<Meal, 'time'>;
+type QuickMeal = Omit<Meal, 'time' | 'date'>;
 
 const RECENT_MEALS_KEY = 'recent-meals';
+const MEALS_KEY = 'meals';
 const MAX_RECENT = 10;
 export const PROFILE_KEY = 'user-profile';
+
+function today(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
 
 const DEFAULT_PROFILE: UserProfile = {
   gender: 'm',
@@ -27,6 +33,15 @@ function loadRecentMeals(): QuickMeal[] {
   }
 }
 
+function loadMeals(): Meal[] {
+  try {
+    const raw = localStorage.getItem(MEALS_KEY);
+    return raw ? (JSON.parse(raw) as Meal[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 function loadProfile(): UserProfile {
   try {
     const raw = localStorage.getItem(PROFILE_KEY);
@@ -42,10 +57,15 @@ export class NutritionService {
 
   readonly profile = signal<UserProfile>(loadProfile());
 
-  readonly meals = signal<Meal[]>([]);
+  readonly meals = signal<Meal[]>(loadMeals());
+
+  readonly todaysMeals = computed(() => {
+    const t = today();
+    return this.meals().filter((m) => m.date === t);
+  });
 
   readonly totalEaten = computed(() =>
-    this.meals().reduce((sum, m) => sum + m.kcal, 0),
+    this.todaysMeals().reduce((sum, m) => sum + m.kcal, 0),
   );
 
   readonly remaining = computed(() => this.profile().goal - this.totalEaten());
@@ -77,12 +97,20 @@ export class NutritionService {
     this.profile.update((p) => ({ ...p, goalType, goal }));
   }
 
-  addMeal(meal: Omit<Meal, 'time'>): void {
-    this.meals.update((ms) => [...ms, { ...meal, time: Date.now() }]);
+  addMeal(meal: Omit<Meal, 'time' | 'date'>): void {
+    this.meals.update((ms) => {
+      const updated = [...ms, { ...meal, time: Date.now(), date: today() }];
+      localStorage.setItem(MEALS_KEY, JSON.stringify(updated));
+      return updated;
+    });
   }
 
-  deleteMeal(index: number): void {
-    this.meals.update((ms) => ms.filter((_, i) => i !== index));
+  deleteMeal(time: number): void {
+    this.meals.update((ms) => {
+      const updated = ms.filter((m) => m.time !== time);
+      localStorage.setItem(MEALS_KEY, JSON.stringify(updated));
+      return updated;
+    });
   }
 
   saveProfile(): void {

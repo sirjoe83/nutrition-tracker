@@ -90,7 +90,7 @@
       <p>Noch keine Mahlzeiten.<br>Füge deine erste hinzu!</p>
     </div>
   } @else {
-    @for (meal of meals(); track meal.time; let i = $index) {
+    @for (meal of meals(); track meal.time) {
       <article class="meal-item">
         <div class="meal-info">
           <div class="meal-name">{{ meal.name }}</div>
@@ -102,7 +102,7 @@
             class="meal-delete"
             type="button"
             [attr.aria-label]="'Mahlzeit ' + meal.name + ' entfernen'"
-            (click)="deleteMeal(i)"
+            (click)="deleteMeal(meal.time)"
           >✕</button>
         </div>
       </article>

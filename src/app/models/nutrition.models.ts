@@ -17,6 +17,7 @@ export interface Meal {
   kcal: number;
   type: string;
   time: number;
+  date: string; // ISO date 'YYYY-MM-DD'
 }
 
 

@@ -23,7 +23,7 @@ export class DashboardComponent {
 
   readonly modal = viewChild.required(AddMealModalComponent);
 
-  readonly meals = this.nutrition.meals;
+  readonly meals = this.nutrition.todaysMeals;
   readonly profile = this.nutrition.profile;
   readonly totalEaten = this.nutrition.totalEaten;
   readonly remaining = this.nutrition.remaining;
@@ -67,12 +67,12 @@ export class DashboardComponent {
     this.modal().open();
   }
 
-  onMealAdded(meal: Omit<Meal, 'time'>): void {
+  onMealAdded(meal: Omit<Meal, 'time' | 'date'>): void {
     this.nutrition.addMeal(meal);
   }
 
-  deleteMeal(index: number): void {
-    this.nutrition.deleteMeal(index);
+  deleteMeal(time: number): void {
+    this.nutrition.deleteMeal(time);
   }
 
   openSettings(): void {
