@@ -1,9 +1,19 @@
 <div class="dashboard-header">
-  <div>
-    <h1 class="dashboard-title">Heute</h1>
-    <time class="date" [attr.datetime]="today.toISOString()">
-      {{ today.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }) }}
-    </time>
+  <div class="date-nav">
+    <button class="nav-btn" type="button" aria-label="Vorheriger Tag" (click)="goBack()">‹</button>
+    <div>
+      <h1 class="dashboard-title">{{ titleLabel() }}</h1>
+      <time class="date" [attr.datetime]="selectedDate()">
+        {{ selectedDateObj().toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }) }}
+      </time>
+    </div>
+    <button
+      class="nav-btn"
+      type="button"
+      aria-label="Nächster Tag"
+      (click)="goForward()"
+      [disabled]="isToday()"
+    >›</button>
   </div>
   <button class="settings-btn" type="button" aria-label="Einstellungen öffnen" (click)="openSettings()">⚙️</button>
 </div>
@@ -78,16 +88,22 @@
 <!-- Meals -->
 <div class="meals-header">
   <h2 class="meals-title">Mahlzeiten</h2>
-  <button class="add-meal-btn" type="button" (click)="openAddMeal()">
-    <span aria-hidden="true">+</span> Hinzufügen
-  </button>
+  @if (isToday()) {
+    <button class="add-meal-btn" type="button" (click)="openAddMeal()">
+      <span aria-hidden="true">+</span> Hinzufügen
+    </button>
+  }
 </div>
 
 <section aria-label="Mahlzeiten des Tages">
   @if (meals().length === 0) {
     <div class="empty-state">
       <div class="icon" aria-hidden="true">🍽️</div>
-      <p>Noch keine Mahlzeiten.<br>Füge deine erste hinzu!</p>
+      @if (isToday()) {
+        <p>Noch keine Mahlzeiten.<br>Füge deine erste hinzu!</p>
+      } @else {
+        <p>Keine Mahlzeiten für diesen Tag.</p>
+      }
     </div>
   } @else {
     @for (meal of meals(); track meal.time) {

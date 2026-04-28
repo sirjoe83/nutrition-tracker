@@ -8,9 +8,12 @@ const MEALS_KEY = 'meals';
 const MAX_RECENT = 10;
 export const PROFILE_KEY = 'user-profile';
 
-function today(): string {
-  const d = new Date();
+function formatDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function today(): string {
+  return formatDate(new Date());
 }
 
 const DEFAULT_PROFILE: UserProfile = {
@@ -59,10 +62,13 @@ export class NutritionService {
 
   readonly meals = signal<Meal[]>(loadMeals());
 
-  readonly todaysMeals = computed(() => {
-    const t = today();
-    return this.meals().filter((m) => m.date === t);
-  });
+  readonly selectedDate = signal<string>(today());
+
+  readonly isToday = computed(() => this.selectedDate() === today());
+
+  readonly todaysMeals = computed(() =>
+    this.meals().filter((m) => m.date === this.selectedDate()),
+  );
 
   readonly totalEaten = computed(() =>
     this.todaysMeals().reduce((sum, m) => sum + m.kcal, 0),
@@ -73,6 +79,21 @@ export class NutritionService {
   readonly percentConsumed = computed(() =>
     Math.min(Math.round((this.totalEaten() / this.profile().goal) * 100), 100),
   );
+
+  goToPreviousDay(): void {
+    const [y, m, d] = this.selectedDate().split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    date.setDate(date.getDate() - 1);
+    this.selectedDate.set(formatDate(date));
+  }
+
+  goToNextDay(): void {
+    if (this.isToday()) return;
+    const [y, m, d] = this.selectedDate().split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    date.setDate(date.getDate() + 1);
+    this.selectedDate.set(formatDate(date));
+  }
 
   calcTdee(
     gender: 'm' | 'f',

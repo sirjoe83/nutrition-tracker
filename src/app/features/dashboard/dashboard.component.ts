@@ -28,8 +28,22 @@ export class DashboardComponent {
   readonly totalEaten = this.nutrition.totalEaten;
   readonly remaining = this.nutrition.remaining;
   readonly pct = this.nutrition.percentConsumed;
+  readonly isToday = this.nutrition.isToday;
+  readonly selectedDate = this.nutrition.selectedDate;
 
-  readonly today = new Date();
+  readonly selectedDateObj = computed(() => {
+    const [y, m, d] = this.selectedDate().split('-').map(Number);
+    return new Date(y, m - 1, d);
+  });
+
+  readonly titleLabel = computed(() => {
+    if (this.isToday()) return 'Heute';
+    const d = new Date();
+    d.setDate(d.getDate() - 1);
+    const yesterday = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    if (this.selectedDate() === yesterday) return 'Gestern';
+    return this.selectedDateObj().toLocaleDateString('de-DE', { weekday: 'long' });
+  });
 
   readonly donutStroke = computed(() => {
     const circumference = 2 * Math.PI * 52;
@@ -55,13 +69,27 @@ export class DashboardComponent {
     const eaten = this.totalEaten();
     const rem = this.remaining();
     if (eaten === 0)
-      return { type: 'ok', icon: '🌅', msg: 'Guten Start – logge deine erste Mahlzeit!' };
+      return {
+        type: 'ok',
+        icon: '🌅',
+        msg: this.isToday()
+          ? 'Guten Start – logge deine erste Mahlzeit!'
+          : 'Keine Mahlzeiten für diesen Tag erfasst.',
+      };
     if (rem > 200)
       return { type: 'ok', icon: '✅', msg: `Noch ${this.fmt(rem)} kcal übrig – du liegst gut!` };
     if (rem >= 0)
       return { type: 'warn', icon: '⚠️', msg: `Nur noch ${this.fmt(rem)} kcal übrig – pass auf!` };
     return { type: 'over', icon: '🔴', msg: `${this.fmt(-rem)} kcal über dem Ziel.` };
   });
+
+  goBack(): void {
+    this.nutrition.goToPreviousDay();
+  }
+
+  goForward(): void {
+    this.nutrition.goToNextDay();
+  }
 
   openAddMeal(): void {
     this.modal().open();
