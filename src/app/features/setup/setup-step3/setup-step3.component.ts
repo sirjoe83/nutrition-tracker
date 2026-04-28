@@ -18,6 +18,7 @@ export class SetupStep3Component {
   readonly goalDiff = computed(() => this.profile().goal - this.profile().tdee);
 
   start(): void {
+    this.nutrition.saveProfile();
     this.router.navigate(['/dashboard']);
   }
 

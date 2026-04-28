@@ -5,6 +5,18 @@ type QuickMeal = Omit<Meal, 'time'>;
 
 const RECENT_MEALS_KEY = 'recent-meals';
 const MAX_RECENT = 10;
+export const PROFILE_KEY = 'user-profile';
+
+const DEFAULT_PROFILE: UserProfile = {
+  gender: 'm',
+  age: 25,
+  height: 175,
+  weight: 70,
+  activityFactor: 1.375,
+  tdee: 2415,
+  goal: 1915,
+  goalType: 'deficit',
+};
 
 function loadRecentMeals(): QuickMeal[] {
   try {
@@ -15,20 +27,20 @@ function loadRecentMeals(): QuickMeal[] {
   }
 }
 
+function loadProfile(): UserProfile {
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY);
+    return raw ? (JSON.parse(raw) as UserProfile) : DEFAULT_PROFILE;
+  } catch {
+    return DEFAULT_PROFILE;
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class NutritionService {
   readonly quickMeals = signal<QuickMeal[]>(loadRecentMeals());
 
-  readonly profile = signal<UserProfile>({
-    gender: 'm',
-    age: 25,
-    height: 175,
-    weight: 70,
-    activityFactor: 1.375,
-    tdee: 2415,
-    goal: 1915,
-    goalType: 'deficit',
-  });
+  readonly profile = signal<UserProfile>(loadProfile());
 
   readonly meals = signal<Meal[]>([]);
 
@@ -71,6 +83,10 @@ export class NutritionService {
 
   deleteMeal(index: number): void {
     this.meals.update((ms) => ms.filter((_, i) => i !== index));
+  }
+
+  saveProfile(): void {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(this.profile()));
   }
 
   addToRecentMeals(meal: QuickMeal): void {

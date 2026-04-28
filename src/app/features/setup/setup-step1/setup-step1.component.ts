@@ -17,13 +17,15 @@ export class SetupStep1Component {
 
   readonly activityLevels = ACTIVITY_LEVELS;
 
-  readonly gender = signal<'m' | 'f'>('m');
-  readonly age = signal(25);
-  readonly height = signal(175);
-  readonly weight = signal(70);
-  readonly selectedFactor = signal(1.375);
+  private readonly profile = this.nutrition.profile();
 
-  readonly tdee = signal(2415);
+  readonly gender = signal<'m' | 'f'>(this.profile.gender);
+  readonly age = signal(this.profile.age);
+  readonly height = signal(this.profile.height);
+  readonly weight = signal(this.profile.weight);
+  readonly selectedFactor = signal(this.profile.activityFactor);
+
+  readonly tdee = signal(this.profile.tdee);
 
   recalc(): void {
     const tdee = this.nutrition.calcTdee(
@@ -49,6 +51,7 @@ export class SetupStep1Component {
       this.weight(),
       this.selectedFactor(),
     );
+    const existingOffset = this.profile.goal - this.profile.tdee;
     this.nutrition.updateProfile({
       gender: this.gender(),
       age: this.age(),
@@ -56,7 +59,7 @@ export class SetupStep1Component {
       weight: this.weight(),
       activityFactor: this.selectedFactor(),
       tdee,
-      goal: tdee - 500,
+      goal: tdee + existingOffset,
     });
     this.router.navigate(['/setup/2']);
   }

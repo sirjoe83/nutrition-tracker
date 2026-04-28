@@ -15,8 +15,10 @@ export class SetupStep2Component {
   private readonly router = inject(Router);
   private readonly nutrition = inject(NutritionService);
 
-  readonly goalType = signal<GoalType>('deficit');
-  readonly offset = signal(-500);
+  private readonly profile = this.nutrition.profile();
+
+  readonly goalType = signal<GoalType>(this.profile.goalType);
+  readonly offset = signal(this.profile.goal - this.profile.tdee);
 
   readonly tdee = computed(() => this.nutrition.profile().tdee);
   readonly goal = computed(() => this.tdee() + this.offset());
