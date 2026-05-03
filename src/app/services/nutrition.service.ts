@@ -5,7 +5,7 @@ type QuickMeal = Omit<Meal, 'time' | 'date'>;
 
 const RECENT_MEALS_KEY = 'recent-meals';
 const MEALS_KEY = 'meals';
-const MAX_RECENT = 10;
+const MAX_RECENT = 20;
 export const PROFILE_KEY = 'user-profile';
 
 function formatDate(d: Date): string {
@@ -66,13 +66,9 @@ export class NutritionService {
 
   readonly isToday = computed(() => this.selectedDate() === today());
 
-  readonly todaysMeals = computed(() =>
-    this.meals().filter((m) => m.date === this.selectedDate()),
-  );
+  readonly todaysMeals = computed(() => this.meals().filter((m) => m.date === this.selectedDate()));
 
-  readonly totalEaten = computed(() =>
-    this.todaysMeals().reduce((sum, m) => sum + m.kcal, 0),
-  );
+  readonly totalEaten = computed(() => this.todaysMeals().reduce((sum, m) => sum + m.kcal, 0));
 
   readonly remaining = computed(() => this.profile().goal - this.totalEaten());
 
