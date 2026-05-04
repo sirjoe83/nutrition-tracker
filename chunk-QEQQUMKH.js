@@ -1,0 +1,1 @@
+var e=[{factor:1.2,icon:"\u{1F6CB}\uFE0F",label:"Sitzend",description:"Kein Sport"},{factor:1.375,icon:"\u{1F6B6}",label:"Leicht aktiv",description:"1\u20133\xD7 / Woche"},{factor:1.55,icon:"\u{1F3C3}",label:"Moderat",description:"3\u20135\xD7 / Woche"},{factor:1.725,icon:"\u{1F4AA}",label:"Sehr aktiv",description:"6\u20137\xD7 / Woche"}];export{e as a};
