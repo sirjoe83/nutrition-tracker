@@ -104,7 +104,7 @@ export class DashboardComponent {
   }
 
   openSettings(): void {
-    this.router.navigate(['/setup/1']);
+    this.router.navigate(['/settings']);
   }
 
   fmt(n: number): string {

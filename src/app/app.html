@@ -1,12 +1,12 @@
 <router-outlet />
 
-@if (isDashboard()) {
+@if (showNav()) {
   <nav class="bottom-nav" aria-label="Hauptnavigation">
-    <button type="button" class="nav-item active" (click)="navTo('dashboard')">
+    <button type="button" class="nav-item" [class.active]="!isSettings()" (click)="navTo('dashboard')">
       <span class="nav-icon" aria-hidden="true">📊</span>
       <span class="nav-label">Dashboard</span>
     </button>
-    <button type="button" class="nav-item" (click)="navTo('settings')">
+    <button type="button" class="nav-item" [class.active]="isSettings()" (click)="navTo('settings')">
       <span class="nav-icon" aria-hidden="true">⚙️</span>
       <span class="nav-label">Profil</span>
     </button>

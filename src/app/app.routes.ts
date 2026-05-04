@@ -49,5 +49,13 @@ export const routes: Routes = [
         (m) => m.DashboardComponent,
       ),
   },
+  {
+    path: 'settings',
+    canActivate: [requireProfileGuard],
+    loadComponent: () =>
+      import('./features/settings/settings.component').then(
+        (m) => m.SettingsComponent,
+      ),
+  },
   { path: '**', redirectTo: 'setup/1' },
 ];

@@ -1,0 +1,133 @@
+<div class="page-header">
+  <h1>Einstellungen</h1>
+  <p>Passe dein Profil und Kalorienziel an.</p>
+</div>
+
+<div class="card">
+  <div class="card-title" id="personal-data-label">Persönliche Daten</div>
+  <fieldset aria-labelledby="personal-data-label">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="gender">Geschlecht</label>
+        <select id="gender" [(ngModel)]="gender">
+          <option value="m">Männlich</option>
+          <option value="f">Weiblich</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="age">Alter (Jahre)</label>
+        <input type="number" id="age" [(ngModel)]="age" min="10" max="100" placeholder="25">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="height">Größe (cm)</label>
+        <input type="number" id="height" [(ngModel)]="height" placeholder="175">
+      </div>
+      <div class="form-group">
+        <label for="weight">Gewicht (kg)</label>
+        <input type="number" id="weight" [(ngModel)]="weight" placeholder="70">
+      </div>
+    </div>
+  </fieldset>
+</div>
+
+<div class="card">
+  <div class="card-title" id="activity-label">Aktivitätslevel</div>
+  <div class="activity-grid" role="radiogroup" aria-labelledby="activity-label">
+    @for (level of activityLevels; track level.factor) {
+      <button
+        type="button"
+        class="activity-btn"
+        [class.selected]="selectedFactor() === level.factor"
+        [attr.aria-pressed]="selectedFactor() === level.factor"
+        (click)="selectActivity(level.factor)"
+      >
+        <span class="icon" aria-hidden="true">{{ level.icon }}</span>
+        <span class="label">{{ level.label }}</span>
+        <span class="factor">{{ level.description }}</span>
+      </button>
+    }
+  </div>
+
+  <div class="result-box" aria-live="polite">
+    <div class="result-label">Geschätzter Tagesumsatz (TDEE)</div>
+    <div class="result-value">{{ fmt(tdee()) }}</div>
+    <div class="result-unit">kcal / Tag</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title" id="goal-label">Kalorienziel</div>
+  <div class="goal-toggles" role="group" aria-labelledby="goal-label">
+    <button
+      type="button"
+      class="goal-toggle deficit"
+      [class.selected]="goalType() === 'deficit'"
+      [attr.aria-pressed]="goalType() === 'deficit'"
+      (click)="selectGoal('deficit')"
+    >⬇ Abnehmen</button>
+    <button
+      type="button"
+      class="goal-toggle maintain"
+      [class.selected]="goalType() === 'maintain'"
+      [attr.aria-pressed]="goalType() === 'maintain'"
+      (click)="selectGoal('maintain')"
+    >= Halten</button>
+    <button
+      type="button"
+      class="goal-toggle surplus"
+      [class.selected]="goalType() === 'surplus'"
+      [attr.aria-pressed]="goalType() === 'surplus'"
+      (click)="selectGoal('surplus')"
+    >⬆ Zunehmen</button>
+  </div>
+
+  <div class="form-group">
+    <label for="goal-slider">{{ sliderLabel() }}</label>
+    <input
+      type="range"
+      id="goal-slider"
+      min="-1000"
+      max="1000"
+      step="50"
+      [value]="offset()"
+      (input)="onSliderChange($any($event.target).value)"
+      [attr.aria-valuenow]="offset()"
+      [attr.aria-valuemin]="-1000"
+      [attr.aria-valuemax]="1000"
+    >
+  </div>
+
+  <div class="goal-summary">
+    <div>
+      <div class="lbl">Tägliches Kalorienziel</div>
+      <div class="val">{{ fmt(goal()) }}</div>
+    </div>
+    <div class="goal-summary-right">
+      <div class="lbl">pro Woche</div>
+      <div class="weekly-val">{{ weeklyLabel() }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Makronährstoffe (empfohlen)</div>
+  <div class="macros-grid">
+    <div class="macro-item">
+      <div class="macro-lbl">Protein</div>
+      <div class="macro-val protein">{{ macros().protein }}g</div>
+    </div>
+    <div class="macro-item">
+      <div class="macro-lbl">Kohlenhydrate</div>
+      <div class="macro-val carbs">{{ macros().carbs }}g</div>
+    </div>
+    <div class="macro-item">
+      <div class="macro-lbl">Fett</div>
+      <div class="macro-val fat">{{ macros().fat }}g</div>
+    </div>
+  </div>
+</div>
+
+<button class="btn-primary" type="button" (click)="save()">Speichern</button>
+<button class="btn-ghost" type="button" (click)="back()">Abbrechen</button>
