@@ -8,7 +8,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Meal } from '../../../models/nutrition.models';
+import { FavoriteMeal, Meal } from '../../../models/nutrition.models';
 import { NutritionService } from '../../../services/nutrition.service';
 
 @Component({
@@ -27,17 +27,18 @@ import { NutritionService } from '../../../services/nutrition.service';
 })
 export class AddMealModalComponent {
   private readonly el = inject(ElementRef);
-  private readonly nutrition = inject(NutritionService);
+  protected readonly nutrition = inject(NutritionService);
 
   readonly mealAdded = output<Omit<Meal, 'time' | 'date'>>();
   readonly closed = output<void>();
 
   readonly isOpen = signal(false);
-  readonly quickMeals = this.nutrition.quickMeals;
+  readonly favoriteMeals = this.nutrition.favoriteMeals;
 
   readonly mealName = signal('');
   readonly mealKcal = signal<number | null>(null);
   readonly mealType = signal('🌅 Frühstück');
+  readonly saveAsFavorite = signal(false);
 
   readonly sheet = viewChild<ElementRef>('sheet');
 
@@ -45,6 +46,7 @@ export class AddMealModalComponent {
     this.mealName.set('');
     this.mealKcal.set(null);
     this.mealType.set('🌅 Frühstück');
+    this.saveAsFavorite.set(false);
     this.isOpen.set(true);
   }
 
@@ -57,10 +59,19 @@ export class AddMealModalComponent {
     if (event.target === this.el.nativeElement) this.close();
   }
 
-  fillQuick(meal: Omit<Meal, 'time' | 'date'>): void {
+  fillQuick(meal: FavoriteMeal): void {
     this.mealName.set(meal.name);
     this.mealKcal.set(meal.kcal);
     this.mealType.set(meal.type);
+    this.saveAsFavorite.set(false);
+  }
+
+  removeFavorite(name: string): void {
+    this.nutrition.removeFromFavorites(name);
+  }
+
+  toggleSaveAsFavorite(): void {
+    this.saveAsFavorite.update((v) => !v);
   }
 
   submit(): void {
@@ -68,7 +79,9 @@ export class AddMealModalComponent {
     const kcal = this.mealKcal();
     if (!name || !kcal) return;
     const meal = { name, kcal, type: this.mealType() };
-    this.nutrition.addToRecentMeals(meal);
+    if (this.saveAsFavorite()) {
+      this.nutrition.addToFavorites(meal);
+    }
     this.mealAdded.emit(meal);
     this.close();
   }

@@ -1,11 +1,9 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { GoalType, Meal, UserProfile } from '../models/nutrition.models';
+import { FavoriteMeal, GoalType, Meal, UserProfile } from '../models/nutrition.models';
 
-type QuickMeal = Omit<Meal, 'time' | 'date'>;
-
-const RECENT_MEALS_KEY = 'recent-meals';
+const FAVORITE_MEALS_KEY = 'favorite-meals';
+const RECENT_MEALS_KEY = 'recent-meals'; // kept for migration only
 const MEALS_KEY = 'meals';
-const MAX_RECENT = 20;
 export const PROFILE_KEY = 'user-profile';
 
 function formatDate(d: Date): string {
@@ -27,10 +25,17 @@ const DEFAULT_PROFILE: UserProfile = {
   goalType: 'deficit',
 };
 
-function loadRecentMeals(): QuickMeal[] {
+function loadFavoriteMeals(): FavoriteMeal[] {
   try {
-    const raw = localStorage.getItem(RECENT_MEALS_KEY);
-    return raw ? (JSON.parse(raw) as QuickMeal[]) : [];
+    const favorites = localStorage.getItem(FAVORITE_MEALS_KEY);
+    if (favorites) return JSON.parse(favorites) as FavoriteMeal[];
+    // migrate from recentMeals on first load
+    const recent = localStorage.getItem(RECENT_MEALS_KEY);
+    const migrated = recent ? (JSON.parse(recent) as FavoriteMeal[]) : [];
+    if (migrated.length) {
+      localStorage.setItem(FAVORITE_MEALS_KEY, JSON.stringify(migrated));
+    }
+    return migrated;
   } catch {
     return [];
   }
@@ -56,7 +61,7 @@ function loadProfile(): UserProfile {
 
 @Injectable({ providedIn: 'root' })
 export class NutritionService {
-  readonly quickMeals = signal<QuickMeal[]>(loadRecentMeals());
+  readonly favoriteMeals = signal<FavoriteMeal[]>(loadFavoriteMeals());
 
   readonly profile = signal<UserProfile>(loadProfile());
 
@@ -75,6 +80,12 @@ export class NutritionService {
   readonly percentConsumed = computed(() =>
     Math.min(Math.round((this.totalEaten() / this.profile().goal) * 100), 100),
   );
+
+  private readonly favoriteNames = computed(() => new Set(this.favoriteMeals().map((m) => m.name)));
+
+  isFavorite(name: string): boolean {
+    return this.favoriteNames().has(name);
+  }
 
   goToPreviousDay(): void {
     const [y, m, d] = this.selectedDate().split('-').map(Number);
@@ -134,13 +145,29 @@ export class NutritionService {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(this.profile()));
   }
 
-  addToRecentMeals(meal: QuickMeal): void {
-    this.quickMeals.update((list) => {
-      const filtered = list.filter((m) => m.name !== meal.name);
-      const updated = [meal, ...filtered].slice(0, MAX_RECENT);
-      localStorage.setItem(RECENT_MEALS_KEY, JSON.stringify(updated));
+  addToFavorites(meal: FavoriteMeal): void {
+    if (this.isFavorite(meal.name)) return;
+    this.favoriteMeals.update((list) => {
+      const updated = [...list, meal];
+      localStorage.setItem(FAVORITE_MEALS_KEY, JSON.stringify(updated));
       return updated;
     });
+  }
+
+  removeFromFavorites(name: string): void {
+    this.favoriteMeals.update((list) => {
+      const updated = list.filter((m) => m.name !== name);
+      localStorage.setItem(FAVORITE_MEALS_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }
+
+  toggleFavorite(meal: FavoriteMeal): void {
+    if (this.isFavorite(meal.name)) {
+      this.removeFromFavorites(meal.name);
+    } else {
+      this.addToFavorites(meal);
+    }
   }
 
   exportData() {
@@ -148,26 +175,31 @@ export class NutritionService {
       version: 1,
       exportedAt: new Date().toISOString(),
       meals: this.meals(),
-      recentMeals: this.quickMeals(),
-      profile: this.profile(),
+      favoriteMeals: this.favoriteMeals(),
     };
   }
 
   importData(raw: unknown): void {
-    const data = raw as { meals: Meal[]; recentMeals: QuickMeal[]; profile: UserProfile };
+    const data = raw as {
+      meals: Meal[];
+      favoriteMeals?: FavoriteMeal[];
+      recentMeals?: FavoriteMeal[];
+      profile: UserProfile;
+    };
+    const favorites = data?.favoriteMeals ?? data?.recentMeals;
     if (
       !Array.isArray(data?.meals) ||
-      !Array.isArray(data?.recentMeals) ||
+      !Array.isArray(favorites) ||
       typeof data?.profile !== 'object' ||
       data?.profile === null
     ) {
       throw new Error('Ungültiges Exportformat');
     }
     localStorage.setItem(MEALS_KEY, JSON.stringify(data.meals));
-    localStorage.setItem(RECENT_MEALS_KEY, JSON.stringify(data.recentMeals));
+    localStorage.setItem(FAVORITE_MEALS_KEY, JSON.stringify(favorites));
     localStorage.setItem(PROFILE_KEY, JSON.stringify(data.profile));
     this.meals.set(data.meals);
-    this.quickMeals.set(data.recentMeals);
+    this.favoriteMeals.set(favorites);
     this.profile.set(data.profile);
   }
 }

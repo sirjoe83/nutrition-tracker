@@ -2,14 +2,22 @@
   <div class="modal-handle" aria-hidden="true"></div>
   <h2 id="modal-title" class="modal-title">Mahlzeit hinzufügen</h2>
 
-  <div class="card-title">Schnellauswahl</div>
+  <div class="card-title">Favoriten</div>
   <div class="quick-picks" role="list">
-    @for (meal of quickMeals(); track meal.name) {
-      <button type="button" class="quick-pick" role="listitem" (click)="fillQuick(meal)">
-        {{ meal.name }} · {{ meal.kcal }} kcal
-      </button>
+    @for (meal of favoriteMeals(); track meal.name) {
+      <div class="quick-pick-wrap" role="listitem">
+        <button type="button" class="quick-pick-fill" (click)="fillQuick(meal)">
+          {{ meal.name }} · {{ meal.kcal }} kcal
+        </button>
+        <button
+          type="button"
+          class="quick-pick-remove"
+          (click)="removeFavorite(meal.name)"
+          [attr.aria-label]="meal.name + ' aus Favoriten entfernen'"
+        >×</button>
+      </div>
     } @empty {
-      <p class="quick-picks-empty">Noch keine Mahlzeiten gespeichert.</p>
+      <p class="quick-picks-empty">Noch keine Favoriten gespeichert.</p>
     }
   </div>
 
@@ -49,6 +57,16 @@
       </select>
     </div>
   </div>
+
+  <button
+    type="button"
+    class="btn-favorite"
+    [class.active]="saveAsFavorite()"
+    [attr.aria-pressed]="saveAsFavorite()"
+    (click)="toggleSaveAsFavorite()"
+  >
+    {{ saveAsFavorite() ? '★' : '☆' }} Als Favorit speichern
+  </button>
 
   <button
     class="btn-primary"

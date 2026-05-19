@@ -20,6 +20,8 @@ export interface Meal {
   date: string; // ISO date 'YYYY-MM-DD'
 }
 
+export type FavoriteMeal = Omit<Meal, 'time' | 'date'>;
+
 
 export const ACTIVITY_LEVELS = [
   { factor: 1.2, icon: '🛋️', label: 'Sitzend', description: 'Kein Sport' },

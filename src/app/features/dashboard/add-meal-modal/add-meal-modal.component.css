@@ -67,23 +67,48 @@
   display: none;
 }
 
-.quick-pick {
+.quick-pick-wrap {
   flex-shrink: 0;
+  display: flex;
+  align-items: stretch;
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 8px 14px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.quick-pick-fill {
+  padding: 8px 12px;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s;
   white-space: nowrap;
   color: var(--text);
   font-family: var(--font-body);
+  background: transparent;
+  border: none;
+  transition: color 0.2s;
 }
 
-.quick-pick:active {
-  border-color: var(--accent);
+.quick-pick-fill:active {
   color: var(--accent);
+}
+
+.quick-pick-remove {
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-left: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  transition: color 0.2s, background 0.2s;
+}
+
+.quick-pick-remove:active {
+  color: var(--text);
+  background: var(--surface);
 }
 
 .divider {
@@ -116,10 +141,33 @@
   margin-bottom: 0;
 }
 
+.btn-favorite {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  margin-bottom: 8px;
+}
+
+.btn-favorite.active {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .btn-primary {
   display: block;
   width: 100%;
-  margin-top: 16px;
+  margin-top: 8px;
   background: var(--accent);
   color: #0e0e12;
   border: none;
