@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,6 +15,7 @@ import { NutritionService } from '../../services/nutrition.service';
 export class SettingsComponent {
   private readonly router = inject(Router);
   private readonly nutrition = inject(NutritionService);
+  private readonly document = inject(DOCUMENT);
 
   readonly activityLevels = ACTIVITY_LEVELS;
 
@@ -93,6 +95,48 @@ export class SettingsComponent {
 
   back(): void {
     this.router.navigate(['/dashboard']);
+  }
+
+  readonly importStatus = signal<'idle' | 'success' | 'error'>('idle');
+
+  exportData(): void {
+    const json = JSON.stringify(this.nutrition.exportData(), null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = this.document.createElement('a');
+    a.href = url;
+    const date = new Date().toISOString().slice(0, 10);
+    a.download = `nutrition-export-${date}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  onImportFile(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result as string) as unknown;
+        this.nutrition.importData(data);
+        this.importStatus.set('success');
+        this.refreshFromService();
+      } catch {
+        this.importStatus.set('error');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  private refreshFromService(): void {
+    const p = this.nutrition.profile();
+    this.gender.set(p.gender);
+    this.age.set(p.age);
+    this.height.set(p.height);
+    this.weight.set(p.weight);
+    this.selectedFactor.set(p.activityFactor);
+    this.goalType.set(p.goalType);
+    this.offset.set(p.goal - p.tdee);
   }
 
   fmt(n: number): string {

@@ -129,5 +129,25 @@
   </div>
 </div>
 
+<div class="card">
+  <div class="card-title">Datenverwaltung</div>
+  <p class="data-desc">Exportiere alle erfassten Mahlzeiten und Einstellungen als JSON-Datei oder stelle eine frühere Sicherung wieder her.</p>
+  <div class="data-actions">
+    <button type="button" class="btn-data" (click)="exportData()">
+      <span aria-hidden="true">⬇</span> Exportieren
+    </button>
+    <button type="button" class="btn-data" (click)="fileInput.click()">
+      <span aria-hidden="true">⬆</span> Importieren
+    </button>
+  </div>
+  <input #fileInput type="file" accept=".json" class="visually-hidden" aria-hidden="true" (change)="onImportFile($event)">
+  @if (importStatus() === 'success') {
+    <p class="import-msg import-success" role="status">Daten erfolgreich importiert.</p>
+  }
+  @if (importStatus() === 'error') {
+    <p class="import-msg import-error" role="alert">Fehler beim Importieren. Bitte überprüfe die Datei.</p>
+  }
+</div>
+
 <button class="btn-primary" type="button" (click)="save()">Speichern</button>
 <button class="btn-ghost" type="button" (click)="back()">Abbrechen</button>

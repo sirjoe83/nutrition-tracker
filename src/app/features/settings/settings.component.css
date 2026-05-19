@@ -278,3 +278,65 @@ fieldset {
   border-color: var(--accent);
   color: var(--accent);
 }
+
+.data-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.data-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-data {
+  flex: 1;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-data:active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.import-msg {
+  font-size: 13px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+.import-success {
+  background: rgba(212, 245, 106, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(212, 245, 106, 0.3);
+}
+
+.import-error {
+  background: rgba(245, 106, 106, 0.1);
+  color: var(--danger);
+  border: 1px solid rgba(245, 106, 106, 0.3);
+}

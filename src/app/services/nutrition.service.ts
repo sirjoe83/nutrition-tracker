@@ -142,4 +142,32 @@ export class NutritionService {
       return updated;
     });
   }
+
+  exportData() {
+    return {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      meals: this.meals(),
+      recentMeals: this.quickMeals(),
+      profile: this.profile(),
+    };
+  }
+
+  importData(raw: unknown): void {
+    const data = raw as { meals: Meal[]; recentMeals: QuickMeal[]; profile: UserProfile };
+    if (
+      !Array.isArray(data?.meals) ||
+      !Array.isArray(data?.recentMeals) ||
+      typeof data?.profile !== 'object' ||
+      data?.profile === null
+    ) {
+      throw new Error('Ungültiges Exportformat');
+    }
+    localStorage.setItem(MEALS_KEY, JSON.stringify(data.meals));
+    localStorage.setItem(RECENT_MEALS_KEY, JSON.stringify(data.recentMeals));
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(data.profile));
+    this.meals.set(data.meals);
+    this.quickMeals.set(data.recentMeals);
+    this.profile.set(data.profile);
+  }
 }
