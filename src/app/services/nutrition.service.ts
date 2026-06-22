@@ -73,7 +73,9 @@ export class NutritionService {
 
   readonly todaysMeals = computed(() => this.meals().filter((m) => m.date === this.selectedDate()));
 
-  readonly totalEaten = computed(() => this.todaysMeals().reduce((sum, m) => sum + m.kcal, 0));
+  readonly totalEaten = computed(() =>
+    this.todaysMeals().reduce((sum, m) => sum + (m.kcal ?? 0), 0),
+  );
 
   readonly remaining = computed(() => this.profile().goal - this.totalEaten());
 

@@ -76,8 +76,8 @@ export class AddMealModalComponent {
 
   submit(): void {
     const name = this.mealName().trim();
+    if (!name) return;
     const kcal = this.mealKcal();
-    if (!name || !kcal) return;
     const meal = { name, kcal, type: this.mealType() };
     if (this.saveAsFavorite()) {
       this.nutrition.addToFavorites(meal);

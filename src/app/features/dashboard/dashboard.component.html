@@ -113,7 +113,11 @@
           <div class="meal-meta">{{ meal.type }} · {{ fmtTime(meal.time) }} Uhr</div>
         </div>
         <div class="meal-right">
-          <div class="meal-kcal">{{ fmt(meal.kcal) }}<span>kcal</span></div>
+          @if (meal.kcal === null) {
+            <div class="meal-kcal">−</div>
+          } @else {
+            <div class="meal-kcal">{{ fmt(meal.kcal) }}<span>kcal</span></div>
+          }
           <button
             class="meal-delete"
             type="button"

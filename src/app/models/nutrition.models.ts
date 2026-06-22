@@ -14,7 +14,7 @@ export interface UserProfile {
 
 export interface Meal {
   name: string;
-  kcal: number;
+  kcal: number | null; // null = ohne Kalorienangabe, zählt als 0 ins Total
   type: string;
   time: number;
   date: string; // ISO date 'YYYY-MM-DD'

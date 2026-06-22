@@ -7,7 +7,7 @@
     @for (meal of favoriteMeals(); track meal.name) {
       <div class="quick-pick-wrap" role="listitem">
         <button type="button" class="quick-pick-fill" (click)="fillQuick(meal)">
-          {{ meal.name }} · {{ meal.kcal }} kcal
+          {{ meal.name }} · {{ meal.kcal === null ? '−' : meal.kcal + ' kcal' }}
         </button>
         <button
           type="button"
@@ -37,7 +37,7 @@
 
   <div class="form-row">
     <div class="form-group">
-      <label for="meal-kcal">Kalorien (kcal)</label>
+      <label for="meal-kcal">Kalorien (kcal, optional)</label>
       <input
         type="number"
         id="meal-kcal"
@@ -72,6 +72,6 @@
     class="btn-primary"
     type="button"
     (click)="submit()"
-    [attr.aria-disabled]="!mealName().trim() || !mealKcal()"
+    [attr.aria-disabled]="!mealName().trim()"
   >Hinzufügen</button>
 </div>
