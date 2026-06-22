@@ -6,14 +6,15 @@ import {
   viewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { Meal } from '../../models/nutrition.models';
+import { Drink, Meal } from '../../models/nutrition.models';
 import { NutritionService } from '../../services/nutrition.service';
 import { AddMealModalComponent } from './add-meal-modal/add-meal-modal.component';
+import { AddDrinkModalComponent } from './add-drink-modal/add-drink-modal.component';
 
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AddMealModalComponent],
+  imports: [AddMealModalComponent, AddDrinkModalComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
@@ -22,8 +23,11 @@ export class DashboardComponent {
   private readonly nutrition = inject(NutritionService);
 
   readonly modal = viewChild.required(AddMealModalComponent);
+  readonly drinkModal = viewChild.required(AddDrinkModalComponent);
 
   readonly meals = this.nutrition.todaysMeals;
+  readonly drinks = this.nutrition.todaysDrinks;
+  readonly totalLiquid = this.nutrition.totalLiquid;
   readonly profile = this.nutrition.profile;
   readonly totalEaten = this.nutrition.totalEaten;
   readonly remaining = this.nutrition.remaining;
@@ -95,12 +99,24 @@ export class DashboardComponent {
     this.modal().open();
   }
 
+  openAddDrink(): void {
+    this.drinkModal().open();
+  }
+
   onMealAdded(meal: Omit<Meal, 'time' | 'date'>): void {
     this.nutrition.addMeal(meal);
   }
 
+  onDrinkAdded(drink: Omit<Drink, 'time' | 'date'>): void {
+    this.nutrition.addDrink(drink);
+  }
+
   deleteMeal(time: number): void {
     this.nutrition.deleteMeal(time);
+  }
+
+  deleteDrink(time: number): void {
+    this.nutrition.deleteDrink(time);
   }
 
   openSettings(): void {

@@ -316,3 +316,10 @@
   font-size: 14px;
   line-height: 1.5;
 }
+
+.liquid-total {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 10px;
+}

@@ -130,4 +130,51 @@
   }
 </section>
 
+<!-- Drinks -->
+<div class="meals-header">
+  <h2 class="meals-title">Getränke</h2>
+  @if (isToday()) {
+    <button class="add-meal-btn" type="button" (click)="openAddDrink()">
+      <span aria-hidden="true">+</span> Hinzufügen
+    </button>
+  }
+</div>
+
+<section aria-label="Getränke des Tages">
+  @if (drinks().length === 0) {
+    <div class="empty-state">
+      <div class="icon" aria-hidden="true">🥤</div>
+      @if (isToday()) {
+        <p>Noch keine Getränke.<br>Erfasse deine Flüssigkeitseinnahme!</p>
+      } @else {
+        <p>Keine Getränke für diesen Tag.</p>
+      }
+    </div>
+  } @else {
+    <p class="liquid-total">Gesamt: {{ fmt(totalLiquid()) }} ml</p>
+    @for (drink of drinks(); track drink.time) {
+      <article class="meal-item">
+        <div class="meal-info">
+          <div class="meal-name">{{ drink.name }}</div>
+          <div class="meal-meta">{{ fmt(drink.amount) }} ml · {{ fmtTime(drink.time) }} Uhr</div>
+        </div>
+        <div class="meal-right">
+          @if (drink.kcal === null) {
+            <div class="meal-kcal">−</div>
+          } @else {
+            <div class="meal-kcal">{{ fmt(drink.kcal) }}<span>kcal</span></div>
+          }
+          <button
+            class="meal-delete"
+            type="button"
+            [attr.aria-label]="'Getränk ' + drink.name + ' entfernen'"
+            (click)="deleteDrink(drink.time)"
+          >✕</button>
+        </div>
+      </article>
+    }
+  }
+</section>
+
 <app-add-meal-modal (mealAdded)="onMealAdded($event)" />
+<app-add-drink-modal (drinkAdded)="onDrinkAdded($event)" />

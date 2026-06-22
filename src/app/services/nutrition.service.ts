@@ -1,9 +1,10 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { FavoriteMeal, GoalType, Meal, UserProfile } from '../models/nutrition.models';
+import { Drink, FavoriteMeal, GoalType, Meal, UserProfile } from '../models/nutrition.models';
 
 const FAVORITE_MEALS_KEY = 'favorite-meals';
 const RECENT_MEALS_KEY = 'recent-meals'; // kept for migration only
 const MEALS_KEY = 'meals';
+const DRINKS_KEY = 'drinks';
 export const PROFILE_KEY = 'user-profile';
 
 function formatDate(d: Date): string {
@@ -50,6 +51,15 @@ function loadMeals(): Meal[] {
   }
 }
 
+function loadDrinks(): Drink[] {
+  try {
+    const raw = localStorage.getItem(DRINKS_KEY);
+    return raw ? (JSON.parse(raw) as Drink[]) : [];
+  } catch {
+    return [];
+  }
+}
+
 function loadProfile(): UserProfile {
   try {
     const raw = localStorage.getItem(PROFILE_KEY);
@@ -67,14 +77,26 @@ export class NutritionService {
 
   readonly meals = signal<Meal[]>(loadMeals());
 
+  readonly drinks = signal<Drink[]>(loadDrinks());
+
   readonly selectedDate = signal<string>(today());
 
   readonly isToday = computed(() => this.selectedDate() === today());
 
   readonly todaysMeals = computed(() => this.meals().filter((m) => m.date === this.selectedDate()));
 
-  readonly totalEaten = computed(() =>
-    this.todaysMeals().reduce((sum, m) => sum + (m.kcal ?? 0), 0),
+  readonly todaysDrinks = computed(() =>
+    this.drinks().filter((d) => d.date === this.selectedDate()),
+  );
+
+  readonly totalLiquid = computed(() =>
+    this.todaysDrinks().reduce((sum, d) => sum + d.amount, 0),
+  );
+
+  readonly totalEaten = computed(
+    () =>
+      this.todaysMeals().reduce((sum, m) => sum + (m.kcal ?? 0), 0) +
+      this.todaysDrinks().reduce((sum, d) => sum + (d.kcal ?? 0), 0),
   );
 
   readonly remaining = computed(() => this.profile().goal - this.totalEaten());
@@ -143,6 +165,22 @@ export class NutritionService {
     });
   }
 
+  addDrink(drink: Omit<Drink, 'time' | 'date'>): void {
+    this.drinks.update((ds) => {
+      const updated = [...ds, { ...drink, time: Date.now(), date: today() }];
+      localStorage.setItem(DRINKS_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }
+
+  deleteDrink(time: number): void {
+    this.drinks.update((ds) => {
+      const updated = ds.filter((d) => d.time !== time);
+      localStorage.setItem(DRINKS_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }
+
   saveProfile(): void {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(this.profile()));
   }
@@ -174,9 +212,10 @@ export class NutritionService {
 
   exportData() {
     return {
-      version: 1,
+      version: 2,
       exportedAt: new Date().toISOString(),
       meals: this.meals(),
+      drinks: this.drinks(),
       favoriteMeals: this.favoriteMeals(),
     };
   }
@@ -184,6 +223,7 @@ export class NutritionService {
   importData(raw: unknown): void {
     const data = raw as {
       meals: Meal[];
+      drinks?: Drink[];
       favoriteMeals?: FavoriteMeal[];
       recentMeals?: FavoriteMeal[];
       profile: UserProfile;
@@ -197,10 +237,13 @@ export class NutritionService {
     ) {
       throw new Error('Ungültiges Exportformat');
     }
+    const drinks = Array.isArray(data?.drinks) ? data.drinks : [];
     localStorage.setItem(MEALS_KEY, JSON.stringify(data.meals));
+    localStorage.setItem(DRINKS_KEY, JSON.stringify(drinks));
     localStorage.setItem(FAVORITE_MEALS_KEY, JSON.stringify(favorites));
     localStorage.setItem(PROFILE_KEY, JSON.stringify(data.profile));
     this.meals.set(data.meals);
+    this.drinks.set(drinks);
     this.favoriteMeals.set(favorites);
     this.profile.set(data.profile);
   }

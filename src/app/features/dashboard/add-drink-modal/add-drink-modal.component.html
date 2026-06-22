@@ -1,0 +1,66 @@
+<div class="modal-sheet" #sheet>
+  <div class="modal-handle" aria-hidden="true"></div>
+  <h2 id="drink-modal-title" class="modal-title">Getränk hinzufügen</h2>
+
+  <div class="card-title">Schnellauswahl</div>
+  <div class="quick-picks" role="list">
+    <button type="button" class="quick-pick-fill" role="listitem" (click)="fillQuick('Wasser', 250)">
+      💧 Wasser · 250 ml
+    </button>
+    <button type="button" class="quick-pick-fill" role="listitem" (click)="fillQuick('Wasser', 500)">
+      💧 Wasser · 500 ml
+    </button>
+    <button type="button" class="quick-pick-fill" role="listitem" (click)="fillQuick('Kaffee', 200)">
+      ☕ Kaffee · 200 ml
+    </button>
+    <button type="button" class="quick-pick-fill" role="listitem" (click)="fillQuick('Tee', 250)">
+      🍵 Tee · 250 ml
+    </button>
+  </div>
+
+  <div class="divider" aria-hidden="true"></div>
+
+  <div class="form-group">
+    <label for="drink-name">Bezeichnung</label>
+    <input
+      type="text"
+      id="drink-name"
+      [ngModel]="drinkName()"
+      (ngModelChange)="drinkName.set($event)"
+      placeholder="z.B. Wasser"
+      autocomplete="off"
+    >
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="drink-amount">Menge (ml)</label>
+      <input
+        type="number"
+        id="drink-amount"
+        [ngModel]="drinkAmount()"
+        (ngModelChange)="drinkAmount.set($event)"
+        placeholder="250"
+        min="1"
+      >
+    </div>
+    <div class="form-group">
+      <label for="drink-kcal">Kalorien (kcal, optional)</label>
+      <input
+        type="number"
+        id="drink-kcal"
+        [ngModel]="drinkKcal()"
+        (ngModelChange)="drinkKcal.set($event)"
+        placeholder="0"
+        min="1"
+      >
+    </div>
+  </div>
+
+  <button
+    class="btn-primary"
+    type="button"
+    (click)="submit()"
+    [attr.aria-disabled]="!drinkName().trim() || !drinkAmount()"
+  >Hinzufügen</button>
+</div>

@@ -22,6 +22,14 @@ export interface Meal {
 
 export type FavoriteMeal = Omit<Meal, 'time' | 'date'>;
 
+export interface Drink {
+  name: string;
+  amount: number; // Menge in ml
+  kcal: number | null; // null = ohne Kalorienangabe, zählt als 0 ins Total
+  time: number;
+  date: string; // ISO date 'YYYY-MM-DD'
+}
+
 
 export const ACTIVITY_LEVELS = [
   { factor: 1.2, icon: '🛋️', label: 'Sitzend', description: 'Kein Sport' },
